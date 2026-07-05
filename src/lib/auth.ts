@@ -10,7 +10,7 @@ type AuthRequest = {
   cookies?: {
     get?: (name: string) => { value: string } | undefined;
   };
-  [key: string]: unknown;
+  [key: string]: any;
 };
 
 type VisitorContext = {

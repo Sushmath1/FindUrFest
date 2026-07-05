@@ -1,0 +1,127 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model CollegeAccount {
+  id           String   @id @default(cuid())
+  collegeId    String   @unique
+  adminEmail   String   @unique
+  passwordHash String
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  college College @relation(fields: [collegeId], references: [id])
+}
+
+model VisitorAccount {
+  id           String   @id @default(cuid())
+  visitorId    String   @unique
+  email        String   @unique
+  passwordHash String
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+model College {
+  id              String   @id @default(cuid())
+  name            String
+  logoUrl         String?
+  mapImageUrl     String?
+  contactNumber   String
+  contactName     String
+  festStartDate   DateTime
+  festEndDate     DateTime
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  collegeAccount     CollegeAccount?
+  venues             Venue[]
+  events             Event[]
+  registrations      Registration[]
+  preRegisteredEntries PreRegisteredEntry[]
+  venueDistances     VenueDistance[]
+}
+
+model Venue {
+  id        String  @id @default(cuid())
+  collegeId String
+  name      String
+  xPercent  Float?
+  yPercent  Float?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  college       College         @relation(fields: [collegeId], references: [id])
+  events        Event[]
+  fromDistances VenueDistance[] @relation("VenueDistanceFrom")
+  toDistances   VenueDistance[] @relation("VenueDistanceTo")
+}
+
+model Event {
+  id                String    @id @default(cuid())
+  collegeId         String
+  venueId           String
+  name              String
+  startTime         DateTime
+  endTime           DateTime
+  status            String    @default("scheduled")
+  lastVenueChangeAt DateTime?
+  previousVenueName String?
+  contactName       String?
+  contactNumber     String?
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+
+  college             College              @relation(fields: [collegeId], references: [id])
+  venue               Venue                @relation(fields: [venueId], references: [id])
+  registrations       Registration[]
+  preRegisteredEntries PreRegisteredEntry[]
+}
+
+model Registration {
+  id            String   @id @default(cuid())
+  visitorId     String?
+  guestSessionId String?
+  eventId       String
+  collegeId     String
+  registeredAt  DateTime @default(now())
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  event   Event   @relation(fields: [eventId], references: [id])
+  college College @relation(fields: [collegeId], references: [id])
+}
+
+model PreRegisteredEntry {
+  id        String   @id @default(cuid())
+  collegeId String
+  eventId   String
+  email     String?
+  phone     String?
+  matched   Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  college College @relation(fields: [collegeId], references: [id])
+  event   Event   @relation(fields: [eventId], references: [id])
+}
+
+model VenueDistance {
+  id           String   @id @default(cuid())
+  collegeId    String
+  fromVenueId  String
+  toVenueId    String
+  minutes      Int
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  college     College @relation(fields: [collegeId], references: [id])
+  fromVenue   Venue   @relation("VenueDistanceFrom", fields: [fromVenueId], references: [id])
+  toVenue     Venue   @relation("VenueDistanceTo", fields: [toVenueId], references: [id])
+
+  @@unique([collegeId, fromVenueId, toVenueId])
+}

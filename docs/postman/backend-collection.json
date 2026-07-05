@@ -1,0 +1,56 @@
+{
+  "info": {
+    "name": "FUF Backend API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Search colleges",
+      "request": {
+        "method": "GET",
+        "url": {
+          "raw": "{{baseUrl}}/api/colleges/search?q=tech",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "colleges", "search"]
+        }
+      }
+    },
+    {
+      "name": "Create event",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Authorization", "value": "Bearer {{collegeToken}}" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"Robotics Workshop\",\n  \"venueId\": \"venue-1\",\n  \"startTime\": \"2026-10-01T10:00:00.000Z\",\n  \"endTime\": \"2026-10-01T11:00:00.000Z\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/colleges/college-1/events",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "colleges", "college-1", "events"]
+        }
+      }
+    },
+    {
+      "name": "Verify registration",
+      "request": {
+        "method": "POST",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"visitorOrGuestId\": \"guest-1\",\n  \"collegeId\": \"college-1\",\n  \"email\": \"visitor@example.com\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/visitors/verify-registration",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "visitors", "verify-registration"]
+        }
+      }
+    }
+  ],
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:3000" },
+    { "key": "collegeToken", "value": "" }
+  ]
+}
